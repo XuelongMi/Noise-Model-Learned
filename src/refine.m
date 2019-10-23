@@ -1,0 +1,57 @@
+function [X_optimal] = refine(pdf,X,weightType,nonincreasing)
+% refine the recovered "X"
+% make sure "X" denotes pdf
+
+if(~exist('weightType','var'))
+    weightType = 'Average';
+end
+if(~exist('nonincreasing','var'))
+    nonincreasing = 0;
+end
+
+tolerrance = 1e-8;
+if(sum(X(X<0))>=tolerrance && sum(X)<=1+tolerrance && sum(X)>=1-tolerrance)
+    X_optimal = X;
+else
+%% Postprocess - iterative way to optimize the pdf.
+N_X = (length(X)-1)/2;
+if length(pdf)~=4*N_X+1
+   pdf = [0;pdf;0]; 
+end
+
+X0 = X(N_X+1:end);
+A = [];
+b = [];
+if(nonincreasing==1)
+    A = zeros(length(X0)-1,length(X0)); % no inequality constraints
+    for i = 1:length(X0)-1
+       A(i,i) = -1;
+       A(i,i+1) = 1;
+    end
+    b = zeros(length(X0)-1,1);
+end
+Aeq = [1,2*ones(1,N_X)];    % possibility constraint
+beq = 1;
+lb = zeros(size(X0));   % non-negative constraint
+ub = [];
+nonlcon = [];
+
+weightMatrix = ones(size(pdf)); % defined by users
+switch weightType
+    case 'Average'
+        weightMatrix = ones(size(pdf));
+    case 'Tail'
+        weightMatrix = abs([-2*N_X:2*N_X])'+1;
+        weightMatrix = weightMatrix/sum(weightMatrix)*(4*N_X+1);
+    case 'Center'
+        weightMatrix = abs([-2*N_X:2*N_X])';
+        weightMatrix = (2*N_X+1-weightMatrix)/sum(weightMatrix)*(4*N_X+1);
+end
+
+% find local optimal
+options = optimoptions(@fmincon,'Display','final','Algorithm','sqp','MaxIterations',1000);   
+fun = @(x) sum(abs(pdf-conv([flipud(x(2:end));x],[flipud(x(2:end));x])).^2.*weightMatrix) + 0.1*sum((x-X0).^2); % objective function
+[X_new,val] = fmincon(fun,X0,A,b,Aeq,beq,lb,ub,nonlcon,options);
+X_optimal = [flipud(X_new(2:end));X_new];
+end
+end
