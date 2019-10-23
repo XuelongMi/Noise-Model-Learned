@@ -1,4 +1,14 @@
 function [X_optimal] = pdf_recover(pdf,weightType,nonincreasing)
+% The recovered solution from deautocorrelation may not a true
+% pdf, need refine step to move into the possibility space.
+% weightType: 
+%       'Average': assign same weight on each element of 'pdf'.
+%       'Tail': assign more weight on the tails of 'pdf'.
+%       'Center': assign more weight on the center part of 'pdf'.
+% nonincreasing:
+%       1: Set the refined distribution nonincreasing from origin.
+%       0: No limitation on the monotonicity.
+
 
 if(~exist('weightType','var'))
     weightType = 'Average';

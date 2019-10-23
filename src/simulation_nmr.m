@@ -6,7 +6,7 @@ clc;
 
 %% Parameters
 SampleSize = [10000,10000];
-type = 'Uniform'; 
+type = 'Cauchy'; 
 
 tic;
 switch type
@@ -75,6 +75,7 @@ plot([-N_X:N_X]*binSize,Recover_Ex,'b--','Linewidth',1.5);
 legend({'$f_{\hat{X}}(t)$','$f_{X}(t)$'},'Interpreter','latex','FontName', 'Calibri','FontSize',15);
 set(f2,'Position',[760,300,1200,420]);
 grid on;
+title(type);
 
 subplot(1,2,2)
 plot([-2*N_X:2*N_X]*binSize,conv(Recover_Sample,Recover_Sample),'r','Linewidth',1.5);
@@ -82,3 +83,4 @@ hold on;
 plot([-N0:N0]*binSize,pdf,'b--','Linewidth',1.5);
 legend({'$f_{\hat{X}}(t) * f_{\hat{X}}(t)$','$f_Y(t)$'},'Interpreter','latex','FontName', 'Calibri','FontSize',15);
 grid on;
+title(['Autocorrelation of ',type]);

@@ -5,8 +5,8 @@ clc;
 
 %% Parameters
 SNR = 10;   % 5 - 10
-freq = 5;   % 1 - 20, signal changing rate
-Active_ratio = 1/200;  % ratio of signal in the whole video
+freq = 10;   % 1 - 20, signal changing rate
+Active_ratio = 1/100;  % ratio of signal in the whole video
 nonincreasing = 1;
 signal_peak = 1;
 N = 500*500;
@@ -45,11 +45,12 @@ pdf = conv(pdf_n,pdf_s);
 N0 = 1/2*(length(pdf)-1);
 N1 = 1/2*(length(pdf_n)-1);
 f0 = figure;
-set(f0,'Position',[200,300,560,420]);
+set(f0,'Position',[200,300,560*3,420]);
+subplot(1,3,1);
 plot([-N1:N1]*binSize,pdf_n,'b','Linewidth',1.5);
 hold on;
 plot([-N0:N0]*binSize,pdf,'r--','Linewidth',1.5);
-legend('Without signal residue','With signal residue');
+legend('Without signal','With signal');
 grid on;
 title('pdf of Y')
 
@@ -59,21 +60,21 @@ Recover_Noise = pdf_recover(pdf_n);
 N_S = (length(Recover_Sample)-1)/2;
 N_N = (length(Recover_Noise)-1)/2;
 
-f1 = figure;
-set(f1,'Position',[760,300,560,420]);
+subplot(1,3,2);
+% set(f1,'Position',[760,300,560,420]);
 plot([-N_N:N_N]*binSize,Recover_Noise,'b','Linewidth',1.5);
 hold on;
 plot([-N_S:N_S]*binSize,Recover_Sample,'r--','Linewidth',1.5);
-legend('Recovered without signal','Recovered with signal');
+legend('Without signal','With signal');
 grid on;
 title('Recovered pdf of X')
 
-f2 = figure;
-set(f2,'Position',[1320,300,560,420]);
+subplot(1,3,3);
+% set(f2,'Position',[1320,300,560,420]);
 plot([-2*N_S:2*N_S]*binSize,conv(Recover_Sample,Recover_Sample),'r','Linewidth',1.5);
 hold on;
 plot([-N0:N0]*binSize,pdf,'b--','Linewidth',1.5);
-legend('Convolution of recovered','Target');
+legend('Autocorrelation of X','Target Y');
 grid on;
 title('Comparison')
 

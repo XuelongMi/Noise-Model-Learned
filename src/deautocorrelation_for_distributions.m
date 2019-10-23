@@ -131,6 +131,7 @@ for i = 1:N0
 end
 
 f0 = figure;
+subplot(2,3,[1,4]);
 plot(-N_X:N_X,X_optimal,'r','Linewidth',1.5);
 hold on;
 plot(-N0/2:N0/2,pdf_0,'b--','Linewidth',1.5)
@@ -138,9 +139,9 @@ legend('Recovered pdf','Target pdf');
 axis([-B_x,B_x,0,max(X_optimal)*1.2]);
 title(type);
 grid on;
-set(f0,'Position',[200,300,560,420]);
+set(f0,'Position',[200,300,560*3,420]);
 
-f1 = figure;
+subplot(2,3,[2,5]);
 plot(-2*N_X:2*N_X,conv_X,'r','Linewidth',1.5);
 hold on;
 plot(-N0:N0,pdf,'b--','Linewidth',1.5);
@@ -148,7 +149,7 @@ legend('Autocorrelation of recovered pdf','Target Y');
 title('Autocorrelation');
 axis([-B_x2,B_x2,min(0,min(conv_X)*1.2),max(pdf)*1.2]);
 grid on;
-set(f1,'Position',[760,300,560,420]);
+% set(f1,'Position',[760,300,560,420]);
 
 %% Single side
 N1 = N0/2;
@@ -173,12 +174,12 @@ for i = N_X:-1:0
         Thr_new = i+1;
     end
 end
-f2 = figure;
+
 B_x = min(find(Single_Pdf<1e-4,1),find(Single_X<1e-4,1));
 if isempty(B_x)
     B_x = N_X;
 end
-subplot(2,1,1)
+subplot(2,3,3);
 plot(0:N_X,Single_X,'r','Linewidth',1.5);
 hold on;
 plot(0:N_X,Single_Pdf,'b--','Linewidth',1.5);
@@ -188,7 +189,7 @@ legend('Recovered pdf','Target pdf','0.13%');
 title('Single side');
 grid on;
 axis([0,B_x,0,1]);
-subplot(2,1,2)
+subplot(2,3,6);
 ratio1 = Single_X./Single_Pdf;
 ratio2 = Single_Pdf./Single_X;
 ratio = max(ratio1,ratio2);
@@ -198,7 +199,7 @@ grid on;
 hold on;
 plot([Thr_new,Thr_new],[0,5],'g--','Linewidth',1.5);
 axis([0,B_x,0,5]);
-set(f2,'Position',[1320,300,560,420]);
+% set(f2,'Position',[1320,300,560,420]);
 
 % %% fft figure;
 % X_optimal_rotate = [X_optimal(N0/2+1:end);X_optimal(1:N0/2)];
