@@ -60,5 +60,6 @@ options = optimoptions(@fmincon,'Display','final','Algorithm','sqp','MaxIteratio
 fun = @(x) sum(abs(pdf-conv([flipud(x(2:end));x],[flipud(x(2:end));x])).^2.*weightMatrix) + 0.1*sum((x-X0).^2); % objective function
 [X_new,val] = fmincon(fun,X0,A,b,Aeq,beq,lb,ub,nonlcon,options);
 X_optimal = [flipud(X_new(2:end));X_new];
+X_optimal(X_optimal<0)=0;
 end
 end
