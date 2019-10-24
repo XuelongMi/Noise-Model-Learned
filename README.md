@@ -2,11 +2,17 @@
 This repository provides the tool to recover the noise model from dataset, and can also be used to recover the signal from its autocorrelation.
 
 - [Assumptions](#assumptions)
+    - [For deautocorrelation](#for-deautocorrelation)
+    - [For noise model recovery from real datasets](#for-noise-model-recovery-from-real-datasets)
+- [Principle](#principle)   
 - [Function introduction](#function-introduction)
-  - [Deautocorrelation](#deautocorrelation)
-  - [Pdf recovery](#pdf-recovery)
-  - [Noise model recovery from datasets](#noise-model-recovery-from-datasets)
+    - [Deautocorrelation](#deautocorrelation)
+    - [Pdf recovery](#pdf-recovery)
+    - [Noise model recovery from datasets](#noise-model-recovery-from-datasets)
 - [Example results](#example-results)
+    - [Without sampling error and signal residue](#without-sampling-error-and-signal-residue)
+    - [Simulation noise without signal residue](#simulation-noise-without-signal-residue)
+    - [Considering signal residue](#considering-signal-residue)
 - [Reference](#reference)
 
 # Assumptions
@@ -17,6 +23,9 @@ This repository provides the tool to recover the noise model from dataset, and c
 ## For noise model recovery from real datasets
 * The signal is strongly correlated for the same pixel between adjacent time points.
 * The noise follows the same distribution and temporally independent.
+
+# Principle
+* See the **[reference](#reference)**.
 
 # Function introduction
 ## Deautocorrelation
