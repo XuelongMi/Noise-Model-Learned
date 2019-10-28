@@ -1,4 +1,4 @@
-function [X_optimal] = refine(pdf,X,weightType,nonincreasing)
+function [X_optimal] = refine_tik(pdf,X,sample_size,weightType,nonincreasing)
 % The recovered solution from deautocorrelation may not a true
 % pdf, need refine step to move into the possibility space.
 % weightType: 
@@ -9,6 +9,8 @@ function [X_optimal] = refine(pdf,X,weightType,nonincreasing)
 %       1: Set the refined distribution nonincreasing from origin.
 %       0: No limitation on the monotonicity.
 
+% errorbound = 7e-5;
+errorbound = 10^(-0.15-0.5*log10(sample_size));
 if(~exist('weightType','var'))
     weightType = 'Average';
 end
@@ -44,6 +46,8 @@ ub = [];
 nonlcon = [];
 
 weightMatrix = ones(size(pdf)); % defined by users
+weightMatrix2 = 2*ones(1,N_X+1);
+weightMatrix2(1) = 1;
 switch weightType
     case 'Average'
         weightMatrix = ones(size(pdf));
@@ -58,19 +62,36 @@ end
 % find local optimal
 options = optimoptions(@fmincon,'Display','off','Algorithm','sqp','MaxIterations',1000);   
 X_star = X0;
-for k = 1:1
-    alpha = 0.5;
-    fun = @(x) sum(abs(pdf-conv([flipud(x(2:end));x],[flipud(x(2:end));x])).^2.*weightMatrix) + alpha^k*sum((x-X_star).^2); % objective function
+t1 = 1.01;
+t2 = 3;
+alpha = 0.5; %(from 0 to 1)
+k = 2;
+lastError = 1;
+while(1)
+    fun = @(x) sum(abs(pdf-conv([flipud(x(2:end));x],[flipud(x(2:end));x])).^2.*weightMatrix) + alpha*weightMatrix2*((x-X_star).^2); % objective function
     [X_new,val] = fmincon(fun,X0,A,b,Aeq,beq,lb,ub,nonlcon,options);
-    X0 = X_new;
+    X_optimal = [flipud(X_new(2:end));X_new];
+    error = sqrt(sum((pdf - conv(X_optimal,X_optimal)).^2));
+    if(alpha>=1 || abs(lastError-error)/error < 1e-2 ||error>=t1*errorbound && error<=t2*errorbound)
+        break;
+    else
+        if(error<t1*errorbound)
+            % increase alpha
+            alpha = alpha * k;
+        else                            % error>t2*errorbound)
+            % decrease alpha
+            alpha = alpha / k;
+        end
+    end
+    lastError = error;
 end
-X_optimal = [flipud(X_new(2:end));X_new];
-X_optimal(X_optimal<0)=0;
-figure;
-plot([-N_X:N_X],X,'LineWidth',1.5);
-hold on;
-plot([-N_X:N_X],X_optimal,'LineWidth',1.5);
-legend('Before refine','After refine');
-grid on;
+
+X_optimal(X_optimal<0)=0;   % in case still has negative values
+% figure;
+% plot([-N_X:N_X],X,'LineWidth',1.5);
+% hold on;
+% plot([-N_X:N_X],X_optimal,'LineWidth',1.5);
+% legend('Before refine','After refine');
+% grid on;
 end
 end

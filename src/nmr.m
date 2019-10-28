@@ -16,6 +16,6 @@ else
     dif = data(:,2:end) - data(:,1:end-1);
 end
 [pdf,binSize] = getDistribution(dif);
-X_optimal = pdf_recover(pdf,weightType,nonincreasing);
+X_optimal = pdf_recover(pdf,numel(data(:)),weightType,nonincreasing);
 
 end
